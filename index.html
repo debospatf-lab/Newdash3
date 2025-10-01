@@ -6,11 +6,10 @@
   <title>HORIZIA Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* Mostly white background as requested */
     :root{ --accent:#2563eb; --muted:#475569; }
     body {
       font-family: Inter, Arial, sans-serif;
-      background: #ffffff; /* mostly white */
+      background: #ffffff;
       color: #1e293b;
       margin: 0;
       padding: 0;
@@ -18,7 +17,6 @@
       display: flex;
       flex-direction: column;
     }
-
     header {
       background: #ffffff;
       padding: 14px 20px;
@@ -36,8 +34,6 @@
     .container{
       max-width:1200px; margin:28px auto; padding:0 20px; flex-grow:1;
     }
-
-    /* Landing horizontal integration row */
     .integrations{
       display:flex; gap:12px; align-items:center; justify-content:center; background:#fbfdff; padding:18px; border-radius:10px; box-shadow: 0 4px 14px rgba(0,0,0,0.04);
     }
@@ -49,20 +45,19 @@
     button{ margin-top:10px; padding:8px 12px; border:none; border-radius:8px; cursor:pointer; font-weight:600; background:var(--accent); color:white }
     button.ghost{ background:transparent; color:var(--accent); border:1px solid rgba(37,99,235,0.12) }
 
+    .body-actions { /* New actions bar under header */ display: flex; gap: 10px; margin: 20px 0 0 0; flex-wrap: wrap; }
+
     footer{ text-align:center; padding:18px; font-size:13px; background:#ffffff; color:var(--muted); box-shadow:0 -4px 8px rgba(0,0,0,0.04) }
 
-    /* Modal styles */
     .modal{ display:none; position:fixed; z-index:1000; left:0;top:0;width:100%;height:100%; background: rgba(0,0,0,0.45); justify-content:center; align-items:center }
     .modal-content{ background:#fff; padding:18px; border-radius:12px; max-width:1000px; width:96%; color:#0f172a; box-shadow:0 8px 28px rgba(2,6,23,0.2); max-height:90vh; overflow:auto }
     .modal-header{ display:flex; align-items:center; justify-content:space-between }
     .close{ cursor:pointer; font-size:22px; color:var(--muted) }
 
-    /* Login/Page */
     #loginPage{ display:flex; height:100vh; align-items:center; justify-content:center; background: linear-gradient(180deg,#f8fafc,#ffffff); }
     .login-box{ background:#fff; padding:24px; border-radius:12px; box-shadow:0 10px 30px rgba(2,6,23,0.06); width:360px }
     .input{ width:100%; padding:10px; border-radius:8px; border:1px solid #e6eef9; margin-bottom:10px }
 
-    /* Chatbox */
     #chatbox{ position:fixed; bottom:18px; right:18px; width:320px; background:#ffffff; border-radius:12px; box-shadow:0 6px 20px rgba(2,6,23,0.12); display:flex; flex-direction:column; overflow:hidden; z-index:2000 }
     #chatbox-header{ background:var(--accent); color:white; padding:10px; font-weight:700; cursor:pointer }
     #chatbox-messages{ padding:10px; max-height:300px; overflow:auto; font-size:14px }
@@ -72,24 +67,231 @@
     #chatbox-input{ display:flex; border-top:1px solid #eef2ff }
     #chatbox-input input{ flex:1; padding:10px; border:0; outline:none }
 
-    /* Simple grid for heatmap */
     .heatmap{ display:grid; grid-template-columns: repeat(6,40px); gap:6px; justify-content:center; }
     .heatcell{ width:40px; height:40px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:11px; color:white }
 
-    /* Dependency map container */
     .map-canvas{ width:100%; height:420px; background:linear-gradient(180deg,#fbfdff,#fff); border-radius:8px; padding:12px; box-sizing:border-box }
 
-    /* user table */
     table{ width:100%; border-collapse:collapse }
     th,td{ padding:8px; border-bottom:1px solid #eef2ff; text-align:left }
+
+    /* ----------- Landing Page styles ------------ */
+    #landingPage {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: #fff;
+    }
+    .landing-header {
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(2,6,23,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 36px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .landing-header .logo-editable {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo-editable img {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: #f1f5f9;
+      padding: 8px;
+    }
+    .edit-logo-btn {
+      font-size: 11px;
+      color: var(--accent);
+      background: transparent;
+      border: 1px solid #dbeafe;
+      border-radius: 6px;
+      padding: 3px 8px;
+      margin-left: 8px;
+      cursor: pointer;
+    }
+    .landing-main {
+      flex: 1;
+      padding: 36px 16px 24px 16px;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .lp-integrations-row {
+      display: flex; gap: 18px; justify-content: center; margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .lp-integration {
+      background: #f9fafb;
+      border-radius: 10px;
+      flex: 1 1 180px;
+      min-width: 170px;
+      max-width: 260px;
+      box-shadow: 0px 2px 8px rgba(37,99,235,0.06);
+      text-align: center;
+      padding: 22px 12px;
+      margin: 0 6px;
+    }
+    .lp-integration img { height: 36px; margin-bottom: 6px; }
+    .lp-pitch {
+      margin: 0 auto;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .lp-pitch-point {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 18px 14px;
+      box-shadow: 0 2px 10px rgba(2,6,23,0.04);
+    }
+    .lp-pitch-point-icon {
+      font-size: 28px;
+      min-width: 32px;
+    }
+    .lp-pitch-point-content strong {
+      font-size: 17px;
+      color: var(--accent);
+    }
+    .lp-pitch-point-content p {
+      margin: 2px 0 0 0;
+      font-size: 15px;
+      color: var(--muted);
+    }
+    .lp-get-started-btn {
+      margin: 30px auto 0 auto; display: block; font-size: 17px; padding: 12px 32px; border-radius: 8px; background: var(--accent); color: #fff; font-weight: 700; box-shadow: 0 2px 10px rgba(37,99,235,0.04);
+      border: none;
+      cursor: pointer;
+    }
+    .lp-footer {
+      text-align: center;
+      padding: 18px;
+      font-size: 13px;
+      background: #ffffff;
+      color: var(--muted);
+      box-shadow:0 -4px 8px rgba(0,0,0,0.04)
+    }
+    @media (max-width:900px){
+      .landing-header { flex-direction:column; align-items:flex-start; gap:12px; padding: 18px 12px;}
+      .landing-main {padding: 24px 4px;}
+    }
+    @media (max-width:600px){
+      .lp-pitch-point { flex-direction: column; gap: 6px;}
+    }
 
     @media (max-width:800px){ .integrations{ flex-direction:column } }
   </style>
 </head>
 <body>
 
+  <!-- LANDING PAGE -->
+  <div id="landingPage">
+    <div class="landing-header">
+      <div class="logo-editable">
+        <img id="editableLogo" src="HORIZIA1.png" alt="App Logo" />
+        <button class="edit-logo-btn" onclick="editLogo()">Edit Logo</button>
+        <input type="file" id="logoFileInput" accept="image/*" style="display:none" />
+      </div>
+      <div style="font-size:22px; font-weight:700; color: var(--accent);">HORIZIA Collaboration Dashboard</div>
+    </div>
+    <main class="landing-main">
+      <!-- Integrations horizontal row -->
+      <div class="lp-integrations-row">
+        <div class="lp-integration">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/jira.svg" alt="Jira" />
+          <div style="font-weight:600; margin-bottom:6px">Jira</div>
+          <div style="font-size:14px; color:var(--muted)">Issues, sprints, and backlog in one view.</div>
+        </div>
+        <div class="lp-integration">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/github.svg" alt="GitHub" />
+          <div style="font-weight:600; margin-bottom:6px">GitHub</div>
+          <div style="font-size:14px; color:var(--muted)">PRs, commits, and branches at a glance.</div>
+        </div>
+        <div class="lp-integration">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/slack.svg" alt="Slack" />
+          <div style="font-weight:600; margin-bottom:6px">Slack</div>
+          <div style="font-size:14px; color:var(--muted)">Channels and alerts for team sync.</div>
+        </div>
+      </div>
+      <!-- PITCH POINTS -->
+      <div class="lp-pitch">
+        <div class="lp-pitch-point">
+          <div class="lp-pitch-point-icon">🤝</div>
+          <div class="lp-pitch-point-content">
+            <strong>Unified Integrations</strong>
+            <p>Connect Jira, GitHub, and Slack in a single dashboard for seamless team collaboration and transparency across your projects.</p>
+          </div>
+        </div>
+        <div class="lp-pitch-point">
+          <div class="lp-pitch-point-icon">🗺️</div>
+          <div class="lp-pitch-point-content">
+            <strong>Annual Delivery Roadmap</strong>
+            <p>Visualize the yearly delivery plan, track milestones, and stay aligned on upcoming releases and goals.</p>
+          </div>
+        </div>
+        <div class="lp-pitch-point">
+          <div class="lp-pitch-point-icon">🔗</div>
+          <div class="lp-pitch-point-content">
+            <strong>Cross-team Dependency Map</strong>
+            <p>See how teams interact and depend on each other to break silos and manage dependencies efficiently.</p>
+          </div>
+        </div>
+        <div class="lp-pitch-point">
+          <div class="lp-pitch-point-icon">🔥</div>
+          <div class="lp-pitch-point-content">
+            <strong>Blockers Heatmap</strong>
+            <p>Identify where blockers are concentrated, so you can resolve critical issues faster and keep projects on track.</p>
+          </div>
+        </div>
+        <div class="lp-pitch-point">
+          <div class="lp-pitch-point-icon">⚠️</div>
+          <div class="lp-pitch-point-content">
+            <strong>Risk Indicators & Alerts</strong>
+            <p>Proactively monitor risks and receive alerts when thresholds are exceeded to ensure timely mitigation.</p>
+          </div>
+        </div>
+        <div class="lp-pitch-point">
+          <div class="lp-pitch-point-icon">📊</div>
+          <div class="lp-pitch-point-content">
+            <strong>Product Status Chart</strong>
+            <p>Quickly assess product health and completion with an intuitive circular chart updated in real time.</p>
+          </div>
+        </div>
+        <div class="lp-pitch-point">
+          <div class="lp-pitch-point-icon">🔒</div>
+          <div class="lp-pitch-point-content">
+            <strong>Role-based Access & User Management</strong>
+            <p>Securely manage user pages, roles, and permissions to ensure the right access for Product Owners, Team Leads, Project Managers, and Engineering Managers.</p>
+          </div>
+        </div>
+        <div class="lp-pitch-point">
+          <div class="lp-pitch-point-icon">🤖</div>
+          <div class="lp-pitch-point-content">
+            <strong>AI Assistant</strong>
+            <p>Ask questions about project status, blockers, or dependencies and get instant insights with the integrated AI chatbot.</p>
+          </div>
+        </div>
+      </div>
+      <button class="lp-get-started-btn" onclick="gotoLogin()">Get Started</button>
+    </main>
+    <footer class="lp-footer">
+      HORIZIA brings all your product collaboration into one modern, easy-to-use dashboard.
+    </footer>
+  </div>
+
   <!-- LOGIN PAGE -->
-  <div id="loginPage">
+  <div id="loginPage" style="display:none">
     <div class="login-box">
       <h3 style="margin:0 0 10px 0; color:var(--accent)">HORIZIA — Sign in</h3>
       <input id="inpUser" class="input" placeholder="Username" />
@@ -117,15 +319,18 @@
       <div style="display:flex; gap:10px; align-items:center">
         <div id="userRole" style="font-size:13px; font-weight:700"></div>
         <button class="ghost" onclick="openModal('users')">User Management</button>
-        <button class="ghost" onclick="openModal('roadmap')">Delivery Roadmap</button>
-        <button class="ghost" onclick="openModal('dependencies')">Cross-team Map</button>
-        <button class="ghost" onclick="openModal('blockers')">Blockers Heatmap</button>
-        <button class="ghost" onclick="openModal('risks')">Risk Alerts</button>
         <button onclick="logout()">Logout</button>
       </div>
     </header>
 
     <div class="container">
+      <div class="body-actions" id="bodyActions">
+        <button class="ghost" onclick="openModal('roadmap')">Delivery Roadmap</button>
+        <button class="ghost" onclick="openModal('dependencies')">Cross-team Map</button>
+        <button class="ghost" onclick="openModal('blockers')">Blockers Heatmap</button>
+        <button class="ghost" onclick="openModal('risks')">Risk Alerts</button>
+      </div>
+
       <!-- Landing area shows Jira, GitHub, Slack horizontally -->
       <div class="integrations">
         <div class="integration">
@@ -235,8 +440,40 @@
 
   <script>
     // ---------------------- GLOBAL STATE ----------------------
-    // Declare global state early to avoid TDZ errors from inline handlers
     let chatOpen = false;
+
+    // ---------------------- LANDING PAGE LOGO ----------------------
+    function editLogo() {
+      document.getElementById('logoFileInput').click();
+    }
+    document.getElementById('logoFileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        document.getElementById('editableLogo').src = evt.target.result;
+        localStorage.setItem('horizia_logo', evt.target.result);
+        // Also set logo on dashboard
+        const dashboardLogo = document.querySelector("#dashboard header img");
+        if (dashboardLogo) dashboardLogo.src = evt.target.result;
+      }
+      reader.readAsDataURL(file);
+    });
+    // Restore logo if changed previously
+    document.addEventListener('DOMContentLoaded', function() {
+      const savedLogo = localStorage.getItem('horizia_logo');
+      if (savedLogo) {
+        document.getElementById('editableLogo').src = savedLogo;
+        const dashboardLogo = document.querySelector("#dashboard header img");
+        if (dashboardLogo) dashboardLogo.src = savedLogo;
+      }
+    });
+
+    // ---------------------- LANDING PAGE NAV ----------------------
+    function gotoLogin() {
+      document.getElementById('landingPage').style.display = 'none';
+      document.getElementById('loginPage').style.display = 'flex';
+    }
 
     // ---------------------- AUTH + ROLES ----------------------
     const demoUsersKey = 'horizia_users_v1';
@@ -259,7 +496,6 @@
       const users = JSON.parse(localStorage.getItem(demoUsersKey)||'[]');
       let user = users.find(x=>x.username===u && x.password===p && x.role===selRole);
       if(!user){
-        // If user doesn't exist, create for demo
         user = { id: Date.now(), username:u||('user'+Date.now()), password:p||'pass', role: selRole };
         users.push(user); localStorage.setItem(demoUsersKey, JSON.stringify(users));
       }
@@ -272,14 +508,13 @@
     function getCurrentUser(){ try{ return JSON.parse(localStorage.getItem('horizia_current_user')||'null'); }catch(e){ return null; } }
 
     function showDashboard(){
+      document.getElementById('landingPage').style.display='none';
+      document.getElementById('loginPage').style.display='none';
       const user = getCurrentUser();
       if(!user) return document.getElementById('loginPage').style.display='flex';
-      document.getElementById('loginPage').style.display='none';
       document.getElementById('dashboard').style.display='block';
       document.getElementById('userRole').textContent = `${user.username} — ${user.role}`;
-      // role-based UI
       document.querySelectorAll('.card').forEach(c=>c.style.display='none');
-      // show role-specific
       const roleClasses = {
         'Product Owner':['role-po','role-all'],
         'Team Lead':['role-tl','role-all'],
@@ -288,11 +523,9 @@
       };
       const classes = roleClasses[user.role]||['role-all'];
       classes.forEach(cl=> document.querySelectorAll('.'+cl).forEach(el=>el.style.display='block'));
-      // always show integrations and product status
       document.querySelectorAll('.role-all').forEach(el=>el.style.display='block');
       renderMiniHeat();
       drawProductChart();
-      // show user management only for Project Manager by default (safe check)
       const userMgmtBtn = Array.from(document.querySelectorAll('button.ghost')).find(b=> (b.getAttribute('onclick')||'').includes("openModal('users')"));
       if(userMgmtBtn){ userMgmtBtn.style.display = (user.role !== 'Project Manager') ? 'none' : 'inline-block'; }
     }
@@ -395,10 +628,8 @@
     function closeModal(){ document.getElementById('modal').style.display='none'; }
     window.onclick = function(e){ if(e.target===document.getElementById('modal')) closeModal(); }
 
-    // ---------------------- INTEGRATIONS SAVE (demo) ----------------------
     function saveIntegration(name){ localStorage.setItem('horizia_int_'+name, 'saved'); alert(name+' saved (demo)'); closeModal(); }
 
-    // ---------------------- PRODUCT STATUS CHART ----------------------
     let productChart=null;
     function drawProductChart(canvasId='productStatus'){
       const canvas = document.getElementById(canvasId);
@@ -409,80 +640,45 @@
       productChart = new Chart(ctx, { type:'doughnut', data, options:{ plugins:{ legend:{ position:'bottom' } }, cutout:'65%'} });
     }
 
-    // ---------------------- HEATMAP ----------------------
     function renderMiniHeat(){ const container = document.getElementById('miniHeat'); if(!container) return; container.innerHTML=''; const vals = [1,2,3,2,1,0,2,3,1,1,2,3]; vals.forEach(v=>{ const div=document.createElement('div'); div.className='heatcell'; div.style.background = heatColor(v); div.textContent = v>0? v:''; container.appendChild(div); }); }
     function renderBigHeat(){ const container=document.getElementById('bigHeat'); if(!container) return; container.innerHTML=''; const vals = Array.from({length:36}).map(()=> Math.ceil(Math.random()*4) ); vals.forEach(v=>{ const d=document.createElement('div'); d.className='heatcell'; d.style.background=heatColor(v); d.textContent = v>0? (v>3?'!':v):''; container.appendChild(d); }); }
     function heatColor(v){ if(v>=4) return '#ff4d4f'; if(v===3) return '#ff944d'; if(v===2) return '#ffd24d'; if(v===1) return '#b3e59a'; return '#e6eef9'; }
 
-    // ---------------------- DEPENDENCY MAP (simple interactive SVG) ----------------------
-    function renderDepMap(){ const c = document.getElementById('depMap'); if(!c) return; c.innerHTML=''; // simple nodes
-      const nodes = [ {id:'A',x:80,y:80,label:'Payments'}, {id:'B',x:240,y:40,label:'Auth'}, {id:'C',x:420,y:120,label:'UI'}, {id:'D',x:320,y:220,label:'API'}, {id:'E',x:140,y:220,label:'Infra'} ];
-      // draw lines then nodes
-      const svgNS = 'http://www.w3.org/2000/svg';
-      const svg = document.createElementNS(svgNS,'svg'); svg.setAttribute('width','100%'); svg.setAttribute('height','420'); svg.setAttribute('viewBox','0 0 600 420');
-      // edges
-      const edges = [['A','D'],['B','A'],['B','D'],['D','C'],['E','D']];
-      edges.forEach(e=>{
-        const n1 = nodes.find(n=>n.id===e[0]); const n2 = nodes.find(n=>n.id===e[1]);
-        const line = document.createElementNS(svgNS,'line'); line.setAttribute('x1',n1.x); line.setAttribute('y1',n1.y); line.setAttribute('x2',n2.x); line.setAttribute('y2',n2.y); line.setAttribute('stroke','#cbd5e1'); line.setAttribute('stroke-width','3'); svg.appendChild(line);
-      });
-      // nodes
-      nodes.forEach(n=>{
-        const g = document.createElementNS(svgNS,'g'); g.setAttribute('transform',`translate(${n.x-18},${n.y-18})`);
-        const rect = document.createElementNS(svgNS,'rect'); rect.setAttribute('width','140'); rect.setAttribute('height','36'); rect.setAttribute('rx','8'); rect.setAttribute('fill','#fff'); rect.setAttribute('stroke','#e6eef9'); rect.setAttribute('x','0'); rect.setAttribute('y','-12'); rect.setAttribute('style','filter:drop-shadow(0 6px 10px rgba(2,6,23,0.06))');
-        const text = document.createElementNS(svgNS,'text'); text.setAttribute('x','10'); text.setAttribute('y','12'); text.setAttribute('font-size','12'); text.setAttribute('fill','#0f172a'); text.textContent = n.label;
-        g.appendChild(rect); g.appendChild(text); svg.appendChild(g);
-        // make draggable
-        makeDraggable(g, svg);
-      });
-      c.appendChild(svg);
-    }
-    function makeDraggable(element, svg){ let isDown=false; let offsetX=0, offsetY=0; element.addEventListener('mousedown', (e)=>{ isDown=true; const transform = element.getAttribute('transform') || 'translate(0,0)'; const match = transform.match(/translate\((-?\d+\.?\d*),\s*(-?\d+\.?\d*)\)/); if(match){ offsetX = e.clientX - parseFloat(match[1]); offsetY = e.clientY - parseFloat(match[2]); } });
-      window.addEventListener('mousemove', (e)=>{ if(!isDown) return; const x = e.clientX - offsetX; const y = e.clientY - offsetY; element.setAttribute('transform', `translate(${x},${y})`); });
-      window.addEventListener('mouseup', ()=>{ isDown=false; });
-    }
+    function renderDepMap(){ const c = document.getElementById('depMap'); if(!c) return; c.innerHTML=''; const nodes = [ {id:'A',x:80,y:80,label:'Payments'}, {id:'B',x:240,y:40,label:'Auth'}, {id:'C',x:420,y:120,label:'UI'}, {id:'D',x:320,y:220,label:'API'}, {id:'E',x:140,y:220,label:'Infra'} ]; const svgNS = 'http://www.w3.org/2000/svg'; const svg = document.createElementNS(svgNS,'svg'); svg.setAttribute('width','100%'); svg.setAttribute('height','420'); svg.setAttribute('viewBox','0 0 600 420'); const edges = [['A','D'],['B','A'],['B','D'],['D','C'],['E','D']]; edges.forEach(e=>{ const n1 = nodes.find(n=>n.id===e[0]); const n2 = nodes.find(n=>n.id===e[1]); const line = document.createElementNS(svgNS,'line'); line.setAttribute('x1',n1.x); line.setAttribute('y1',n1.y); line.setAttribute('x2',n2.x); line.setAttribute('y2',n2.y); line.setAttribute('stroke','#cbd5e1'); line.setAttribute('stroke-width','3'); svg.appendChild(line); }); nodes.forEach(n=>{ const g = document.createElementNS(svgNS,'g'); g.setAttribute('transform',`translate(${n.x-18},${n.y-18})`); const rect = document.createElementNS(svgNS,'rect'); rect.setAttribute('width','140'); rect.setAttribute('height','36'); rect.setAttribute('rx','8'); rect.setAttribute('fill','#fff'); rect.setAttribute('stroke','#e6eef9'); rect.setAttribute('x','0'); rect.setAttribute('y','-12'); rect.setAttribute('style','filter:drop-shadow(0 6px 10px rgba(2,6,23,0.06))'); const text = document.createElementNS(svgNS,'text'); text.setAttribute('x','10'); text.setAttribute('y','12'); text.setAttribute('font-size','12'); text.setAttribute('fill','#0f172a'); text.textContent = n.label; g.appendChild(rect); g.appendChild(text); svg.appendChild(g); makeDraggable(g, svg); }); c.appendChild(svg); }
+    function makeDraggable(element, svg){ let isDown=false; let offsetX=0, offsetY=0; element.addEventListener('mousedown', (e)=>{ isDown=true; const transform = element.getAttribute('transform') || 'translate(0,0)'; const match = transform.match(/translate\((-?\d+\.?\d*),\s*(-?\d+\.?\d*)\)/); if(match){ offsetX = e.clientX - parseFloat(match[1]); offsetY = e.clientY - parseFloat(match[2]); } }); window.addEventListener('mousemove', (e)=>{ if(!isDown) return; const x = e.clientX - offsetX; const y = e.clientY - offsetY; element.setAttribute('transform', `translate(${x},${y})`); }); window.addEventListener('mouseup', ()=>{ isDown=false; }); }
 
-    // ---------------------- RISKS ----------------------
     function renderRisks(){ const table = document.getElementById('riskTable'); if(!table) return; const risks = [ {id:1,name:'Payment gateway latency',sev:'High',owner:'dan'},{id:2,name:'Auth token expiry issue',sev:'Critical',owner:'bob'},{id:3,name:'API rate limits',sev:'Medium',owner:'carol'} ]; table.innerHTML=''; risks.forEach(r=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${r.name}</td><td>${r.sev}</td><td>${r.owner}</td><td><button onclick="ack(${r.id})">Acknowledge</button></td>`; table.appendChild(tr); }); }
     function ack(id){ alert('Acknowledged risk '+id); }
     function ackAll(){ alert('All risks acknowledged (demo)'); }
 
-    // ---------------------- USERS UI ----------------------
     function renderUsers(){ const tbl=document.getElementById('userTable'); if(!tbl) return; const users = JSON.parse(localStorage.getItem(demoUsersKey)||'[]'); tbl.innerHTML=''; users.forEach(u=>{ const tr=document.createElement('tr'); tr.innerHTML = `<td>${u.username}</td><td>${u.role}</td><td><button onclick="removeUser('${u.username}')">Remove</button></td>`; tbl.appendChild(tr); }); }
     function addUser(){ const un=document.getElementById('newUser').value.trim(); const pw=document.getElementById('newPass').value; const role=document.getElementById('newRole').value; if(!un) return alert('Provide username'); const users=JSON.parse(localStorage.getItem(demoUsersKey)||'[]'); if(users.find(x=>x.username===un)) return alert('User exists'); users.push({id:Date.now(),username:un,password:pw||'pass',role}); localStorage.setItem(demoUsersKey, JSON.stringify(users)); renderUsers(); }
     function removeUser(username){ if(!confirm('Remove '+username+'?')) return; let users=JSON.parse(localStorage.getItem(demoUsersKey)||'[]'); users = users.filter(u=>u.username!==username); localStorage.setItem(demoUsersKey, JSON.stringify(users)); renderUsers(); }
 
-    // ---------------------- AI CHAT (demo) ----------------------
     function toggleChat(){
-      // defensive guard if chatOpen somehow not set
       if(typeof chatOpen === 'undefined') chatOpen = false;
       chatOpen = !chatOpen;
       const chatbox = document.getElementById('chatbox');
       if(chatbox) chatbox.style.display = chatOpen? 'flex':'none';
     }
     function addMessage(sender,text){ const el=document.createElement('div'); el.className='msg '+(sender==='user'?'user':'ai'); el.textContent=text; const box=document.getElementById('chatbox-messages'); if(box) { box.appendChild(el); box.scrollTop = box.scrollHeight; } }
-    async function sendMessage(){ const input=document.getElementById('chatInput'); if(!input) return; const txt = input.value.trim(); if(!txt) return; addMessage('user',txt); input.value=''; // demo AI: simple rule-based answers
-      let reply = 'Sorry, I don\'t know. Try asking about blockers, roadmap or product status.';
-      const q = txt.toLowerCase();
-      if(q.includes('blocker')||q.includes('blocks')) reply = 'There are several blockers concentrated in Payments and API. Open Blockers Heatmap for details.';
-      else if(q.includes('roadmap')) reply = 'Q2: Beta & Integrations. Q4: GA. Open the Delivery Roadmap for a visual timeline.';
-      else if(q.includes('status')||q.includes('product')) reply = 'Product is ~55% complete, with 15% at risk. Open Product Status for the circular chart.';
-      else if(q.includes('dependencies')) reply = 'Auth -> Payments -> API -> UI is the main chain. Use Cross-team Map to explore.';
-      addMessage('ai', reply);
-    }
+    async function sendMessage(){ const input=document.getElementById('chatInput'); if(!input) return; const txt = input.value.trim(); if(!txt) return; addMessage('user',txt); input.value=''; let reply = 'Sorry, I don\'t know. Try asking about blockers, roadmap or product status.'; const q = txt.toLowerCase(); if(q.includes('blocker')||q.includes('blocks')) reply = 'There are several blockers concentrated in Payments and API. Open Blockers Heatmap for details.'; else if(q.includes('roadmap')) reply = 'Q2: Beta & Integrations. Q4: GA. Open the Delivery Roadmap for a visual timeline.'; else if(q.includes('status')||q.includes('product')) reply = 'Product is ~55% complete, with 15% at risk. Open Product Status for the circular chart.'; else if(q.includes('dependencies')) reply = 'Auth -> Payments -> API -> UI is the main chain. Use Cross-team Map to explore.'; addMessage('ai', reply); }
 
-    // ---------------------- SMALL RENDER HELPERS ----------------------
     function renderBigChartIfOpen(){ if(document.getElementById('productStatusLarge')) drawProductChart('productStatusLarge'); }
 
-    // ---------------------- INITIALIZATION ----------------------
     document.addEventListener('DOMContentLoaded', ()=>{
-      // seed demo users, then render UI if a user is logged in
       seedUsers();
       updateDateTime();
       setInterval(updateDateTime,1000);
       renderMiniHeat();
       drawProductChart();
+      // Initial state: show landing page, hide dashboard/login
       if(getCurrentUser()) showDashboard();
+      else {
+        document.getElementById('landingPage').style.display = 'flex';
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'none';
+      }
     });
 
   </script>
