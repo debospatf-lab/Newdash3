@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HORIZIA Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Mostly white background as requested */
+    :root{ --accent:#2563eb; --muted:#475569; }
+    body {
+      font-family: Inter, Arial, sans-serif;
+      background: #ffffff; /* mostly white */
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #ffffff;
+      padding: 14px 20px;
+      display: flex;
+      gap:12px;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+      flex-wrap: wrap;
+    }
+    header h1{ margin:0; font-size:20px; color:var(--accent); }
+    header img{ width:100px }
+    .datetime{ font-size:13px; color:var(--muted) }
+
+    .container{
+      max-width:1200px; margin:28px auto; padding:0 20px; flex-grow:1;
+    }
+
+    /* Landing horizontal integration row */
+    .integrations{
+      display:flex; gap:12px; align-items:center; justify-content:center; background:#fbfdff; padding:18px; border-radius:10px; box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+    }
+    .integration { background:#fff; padding:16px; border-radius:8px; min-width:200px; text-align:center; box-shadow:0 6px 12px rgba(0,0,0,0.04) }
+
+    .grid{ display:flex; gap:18px; flex-wrap:wrap; margin-top:20px; }
+    .card{ background:#ffffff; padding:16px; border-radius:10px; box-shadow:0 6px 14px rgba(0,0,0,0.06); text-align:center; flex:1; min-width:220px; }
+    .card h2{ margin:8px 0 }
+    button{ margin-top:10px; padding:8px 12px; border:none; border-radius:8px; cursor:pointer; font-weight:600; background:var(--accent); color:white }
+    button.ghost{ background:transparent; color:var(--accent); border:1px solid rgba(37,99,235,0.12) }
+
+    footer{ text-align:center; padding:18px; font-size:13px; background:#ffffff; color:var(--muted); box-shadow:0 -4px 8px rgba(0,0,0,0.04) }
+
+    /* Modal styles */
+    .modal{ display:none; position:fixed; z-index:1000; left:0;top:0;width:100%;height:100%; background: rgba(0,0,0,0.45); justify-content:center; align-items:center }
+    .modal-content{ background:#fff; padding:18px; border-radius:12px; max-width:1000px; width:96%; color:#0f172a; box-shadow:0 8px 28px rgba(2,6,23,0.2); max-height:90vh; overflow:auto }
+    .modal-header{ display:flex; align-items:center; justify-content:space-between }
+    .close{ cursor:pointer; font-size:22px; color:var(--muted) }
+
+    /* Login/Page */
+    #loginPage{ display:flex; height:100vh; align-items:center; justify-content:center; background: linear-gradient(180deg,#f8fafc,#ffffff); }
+    .login-box{ background:#fff; padding:24px; border-radius:12px; box-shadow:0 10px 30px rgba(2,6,23,0.06); width:360px }
+    .input{ width:100%; padding:10px; border-radius:8px; border:1px solid #e6eef9; margin-bottom:10px }
+
+    /* Chatbox */
+    #chatbox{ position:fixed; bottom:18px; right:18px; width:320px; background:#ffffff; border-radius:12px; box-shadow:0 6px 20px rgba(2,6,23,0.12); display:flex; flex-direction:column; overflow:hidden; z-index:2000 }
+    #chatbox-header{ background:var(--accent); color:white; padding:10px; font-weight:700; cursor:pointer }
+    #chatbox-messages{ padding:10px; max-height:300px; overflow:auto; font-size:14px }
+    .msg{ margin:6px 0 }
+    .user{ text-align:right; color:var(--accent) }
+    .ai{ text-align:left; color:var(--muted) }
+    #chatbox-input{ display:flex; border-top:1px solid #eef2ff }
+    #chatbox-input input{ flex:1; padding:10px; border:0; outline:none }
+
+    /* Simple grid for heatmap */
+    .heatmap{ display:grid; grid-template-columns: repeat(6,40px); gap:6px; justify-content:center; }
+    .heatcell{ width:40px; height:40px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:11px; color:white }
+
+    /* Dependency map container */
+    .map-canvas{ width:100%; height:420px; background:linear-gradient(180deg,#fbfdff,#fff); border-radius:8px; padding:12px; box-sizing:border-box }
+
+    /* user table */
+    table{ width:100%; border-collapse:collapse }
+    th,td{ padding:8px; border-bottom:1px solid #eef2ff; text-align:left }
+
+    @media (max-width:800px){ .integrations{ flex-direction:column } }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN PAGE -->
+  <div id="loginPage">
+    <div class="login-box">
+      <h3 style="margin:0 0 10px 0; color:var(--accent)">HORIZIA — Sign in</h3>
+      <input id="inpUser" class="input" placeholder="Username" />
+      <input id="inpPass" type="password" class="input" placeholder="Password" />
+      <label style="display:block; margin:8px 0; color:var(--muted)">Select role for demo:</label>
+      <select id="inpRole" class="input">
+        <option>Product Owner</option>
+        <option>Team Lead</option>
+        <option>Project Manager</option>
+        <option>Engineering Manager</option>
+      </select>
+      <button style="width:100%" onclick="doLogin()">Sign in</button>
+      <p style="font-size:13px; color:var(--muted); margin-top:8px">This demo stores users in your browser (localStorage). For production, replace with real auth backend and secure storage.</p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" style="display:none;">
+    <header>
+      <div style="display:flex; gap:12px; align-items:center">
+        <img src="HORIZIA1.png" alt="logo" onerror="this.style.display='none'" />
+        <h1>Collaboration Dashboard</h1>
+        <div class="datetime" id="datetime"></div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center">
+        <div id="userRole" style="font-size:13px; font-weight:700"></div>
+        <button class="ghost" onclick="openModal('users')">User Management</button>
+        <button class="ghost" onclick="openModal('roadmap')">Delivery Roadmap</button>
+        <button class="ghost" onclick="openModal('dependencies')">Cross-team Map</button>
+        <button class="ghost" onclick="openModal('blockers')">Blockers Heatmap</button>
+        <button class="ghost" onclick="openModal('risks')">Risk Alerts</button>
+        <button onclick="logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="container">
+      <!-- Landing area shows Jira, GitHub, Slack horizontally -->
+      <div class="integrations">
+        <div class="integration">
+          <h3>Jira</h3>
+          <p style="margin:6px 0">Issues, sprints & backlog</p>
+          <button onclick="openModal('jira')">Connect Jira</button>
+        </div>
+        <div class="integration">
+          <h3>GitHub</h3>
+          <p style="margin:6px 0">PRs, commits & branches</p>
+          <button onclick="openModal('github')">Connect GitHub</button>
+        </div>
+        <div class="integration">
+          <h3>Slack</h3>
+          <p style="margin:6px 0">Channels & alerts</p>
+          <button onclick="openModal('slack')">Connect Slack</button>
+        </div>
+      </div>
+
+      <!-- Main cards -->
+      <div class="grid">
+        <div class="card role-all">
+          <h2>📊 Product Status</h2>
+          <p>High-level product health and completion</p>
+          <canvas id="productStatus" width="260" height="160"></canvas>
+          <button onclick="openModal('product-status')">View</button>
+        </div>
+
+        <div class="card role-all">
+          <h2>🔥 Blockers Heatmap</h2>
+          <p>Where issues are concentrated</p>
+          <div style="height:80px; display:flex; align-items:center; justify-content:center">
+            <div style="width:180px;">
+              <div id="miniHeat" class="heatmap" aria-hidden="true"></div>
+            </div>
+          </div>
+          <button onclick="openModal('blockers')">Open Heatmap</button>
+        </div>
+
+        <div class="card role-all">
+          <h2>🔗 Cross-team Dependencies</h2>
+          <p>Visual dependency map</p>
+          <div style="height:80px; display:flex; align-items:center; justify-content:center">
+            <svg width="180" height="80">
+              <circle cx="30" cy="40" r="12" fill="#e6f0ff"></circle>
+              <text x="30" y="44" text-anchor="middle" font-size="10">Team A</text>
+              <circle cx="90" cy="20" r="12" fill="#fff4e6"></circle>
+              <text x="90" y="24" text-anchor="middle" font-size="10">Team B</text>
+              <circle cx="150" cy="40" r="12" fill="#f3e6ff"></circle>
+              <text x="150" y="44" text-anchor="middle" font-size="10">Team C</text>
+              <line x1="42" y1="40" x2="78" y2="24" stroke="#c3d8ff" stroke-width="2"/>
+              <line x1="102" y1="26" x2="138" y2="40" stroke="#ffd9b3" stroke-width="2"/>
+            </svg>
+          </div>
+          <button onclick="openModal('dependencies')">Open Map</button>
+        </div>
+      </div>
+
+      <!-- Role-specific sample card -->
+      <div class="grid" style="margin-top:18px">
+        <div class="card role-po role-pm">
+          <h2>📌 Roadmap</h2>
+          <p>Yearly milestones and releases</p>
+          <button onclick="openModal('roadmap')">Open Roadmap</button>
+        </div>
+
+        <div class="card role-tl role-em">
+          <h2>⚠ Risk Indicators</h2>
+          <p>Alerts when thresholds exceed limits</p>
+          <button onclick="openModal('risks')">View Risks</button>
+        </div>
+
+        <div class="card role-all">
+          <h2>🤖 AI Assistant</h2>
+          <p>Ask about project status, blockers, or dependencies</p>
+          <button onclick="toggleChat();">Open Chat</button>
+        </div>
+      </div>
+
+    </div>
+
+    <footer>
+      <p>© 2025 HORIZIA — Team Collaboration Dashboard</p>
+    </footer>
+  </div>
+
+  <!-- GLOBAL MODAL -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content" id="modalContent">
+      <div class="modal-header">
+        <h3 id="modalTitle">Modal</h3>
+        <span class="close" onclick="closeModal()">&times;</span>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- AI Chatbox -->
+  <div id="chatbox" style="display:none;">
+    <div id="chatbox-header" onclick="toggleChat()">🤖 AI Assistant</div>
+    <div id="chatbox-messages"></div>
+    <div id="chatbox-input">
+      <input id="chatInput" placeholder="Ask me about the project..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    // ---------------------- GLOBAL STATE ----------------------
+    // Declare global state early to avoid TDZ errors from inline handlers
+    let chatOpen = false;
+
+    // ---------------------- AUTH + ROLES ----------------------
+    const demoUsersKey = 'horizia_users_v1';
+    function seedUsers(){
+      if(!localStorage.getItem(demoUsersKey)){
+        const users = [
+          {id:1, username:'alice', password:'pass', role:'Product Owner'},
+          {id:2, username:'bob', password:'pass', role:'Team Lead'},
+          {id:3, username:'carol', password:'pass', role:'Project Manager'},
+          {id:4, username:'dan', password:'pass', role:'Engineering Manager'}
+        ];
+        localStorage.setItem(demoUsersKey, JSON.stringify(users));
+      }
+    }
+
+    function doLogin(){
+      const u = document.getElementById('inpUser').value.trim();
+      const p = document.getElementById('inpPass').value;
+      const selRole = document.getElementById('inpRole').value;
+      const users = JSON.parse(localStorage.getItem(demoUsersKey)||'[]');
+      let user = users.find(x=>x.username===u && x.password===p && x.role===selRole);
+      if(!user){
+        // If user doesn't exist, create for demo
+        user = { id: Date.now(), username:u||('user'+Date.now()), password:p||'pass', role: selRole };
+        users.push(user); localStorage.setItem(demoUsersKey, JSON.stringify(users));
+      }
+      localStorage.setItem('horizia_current_user', JSON.stringify(user));
+      showDashboard();
+    }
+
+    function logout(){ localStorage.removeItem('horizia_current_user'); location.reload(); }
+
+    function getCurrentUser(){ try{ return JSON.parse(localStorage.getItem('horizia_current_user')||'null'); }catch(e){ return null; } }
+
+    function showDashboard(){
+      const user = getCurrentUser();
+      if(!user) return document.getElementById('loginPage').style.display='flex';
+      document.getElementById('loginPage').style.display='none';
+      document.getElementById('dashboard').style.display='block';
+      document.getElementById('userRole').textContent = `${user.username} — ${user.role}`;
+      // role-based UI
+      document.querySelectorAll('.card').forEach(c=>c.style.display='none');
+      // show role-specific
+      const roleClasses = {
+        'Product Owner':['role-po','role-all'],
+        'Team Lead':['role-tl','role-all'],
+        'Project Manager':['role-pm','role-all'],
+        'Engineering Manager':['role-em','role-all']
+      };
+      const classes = roleClasses[user.role]||['role-all'];
+      classes.forEach(cl=> document.querySelectorAll('.'+cl).forEach(el=>el.style.display='block'));
+      // always show integrations and product status
+      document.querySelectorAll('.role-all').forEach(el=>el.style.display='block');
+      renderMiniHeat();
+      drawProductChart();
+      // show user management only for Project Manager by default (safe check)
+      const userMgmtBtn = Array.from(document.querySelectorAll('button.ghost')).find(b=> (b.getAttribute('onclick')||'').includes("openModal('users')"));
+      if(userMgmtBtn){ userMgmtBtn.style.display = (user.role !== 'Project Manager') ? 'none' : 'inline-block'; }
+    }
+
+    // ---------------------- DATETIME ----------------------
+    function updateDateTime(){ const now=new Date(); const opts={weekday:'short',year:'numeric',month:'short',day:'numeric'}; document.querySelectorAll('.datetime').forEach(el=>el.textContent = now.toLocaleDateString(undefined,opts)+' | '+now.toLocaleTimeString()); }
+
+    // ---------------------- MODALS CONTENT ----------------------
+    function openModal(key){
+      const title = document.getElementById('modalTitle');
+      const body = document.getElementById('modalBody');
+      const modal = document.getElementById('modal');
+      body.innerHTML = '';
+      if(key==='jira'){ title.textContent='Connect Jira'; body.innerHTML = '<p>Provide Jira Base URL and API token (demo only).</p><input class="input" id="jiraUrl" placeholder="https://your-domain.atlassian.net" /><input class="input" id="jiraToken" placeholder="API token" /><button onclick="saveIntegration(\'jira\')">Save</button>' }
+      else if(key==='github'){ title.textContent='Connect GitHub'; body.innerHTML = '<p>Provide GitHub personal access token (demo only).</p><input class="input" id="ghToken" placeholder="ghp_..." /><button onclick="saveIntegration(\'github\')">Save</button>' }
+      else if(key==='slack'){ title.textContent='Connect Slack'; body.innerHTML = '<p>Provide Slack Bot token (demo only).</p><input class="input" id="slackToken" placeholder="xoxb-..." /><button onclick="saveIntegration(\'slack\')">Save</button>' }
+
+      else if(key==='roadmap'){
+        title.textContent='Delivery Roadmap — 2025';
+        body.innerHTML = `<p style='color:var(--muted)'>Quarterly milestones and release windows (editable).</p>
+          <div style='display:flex; gap:12px; flex-wrap:wrap'>
+            <div style='flex:1; min-width:200px; background:#f8fbff; padding:12px; border-radius:8px'>
+              <strong>Q1</strong><ul><li>Discovery</li><li>Alpha</li></ul>
+            </div>
+            <div style='flex:1; min-width:200px; background:#fff7f2; padding:12px; border-radius:8px'>
+              <strong>Q2</strong><ul><li>Beta</li><li>Integrations</li></ul>
+            </div>
+            <div style='flex:1; min-width:200px; background:#f3f9f3; padding:12px; border-radius:8px'>
+              <strong>Q3</strong><ul><li>Release Candidate</li><li>Scale</li></ul>
+            </div>
+            <div style='flex:1; min-width:200px; background:#fff6ff; padding:12px; border-radius:8px'>
+              <strong>Q4</strong><ul><li>GA</li><li>Post-launch</li></ul>
+            </div>
+          </div>
+          <p style='margin-top:12px; color:var(--muted)'>This is a modal roadmap for the year — you can replace with dynamic data and integrate with your product planning API.</p>`;
+      }
+
+      else if(key==='dependencies'){
+        title.textContent='Cross-team Dependency Map';
+        body.innerHTML = `<div class='map-canvas' id='depMap'></div><p style='color:var(--muted)'>Drag nodes to explore dependencies. (demo static map)</p>`;
+        setTimeout(()=>renderDepMap(),50);
+      }
+
+      else if(key==='blockers'){
+        title.textContent='Blockers Heatmap';
+        body.innerHTML = `<p style='color:var(--muted)'>Heatmap shows blockers by component / team.</p>
+          <div style='display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap'>
+            <div style='flex:1; min-width:320px'>
+              <div id='bigHeat' class='heatmap' style='grid-template-columns:repeat(6,48px)'></div>
+            </div>
+            <div style='width:260px'>
+              <h4>Legend</h4>
+              <div style='display:flex; gap:8px; align-items:center'><div style='width:18px;height:18px;background:#ff4d4f;border-radius:4px'></div><span>Critical</span></div>
+              <div style='display:flex; gap:8px; align-items:center;margin-top:6px'><div style='width:18px;height:18px;background:#ff944d;border-radius:4px'></div><span>High</span></div>
+              <div style='display:flex; gap:8px; align-items:center;margin-top:6px'><div style='width:18px;height:18px;background:#ffd24d;border-radius:4px'></div><span>Medium</span></div>
+              <div style='display:flex; gap:8px; align-items:center;margin-top:6px'><div style='width:18px;height:18px;background:#b3e59a;border-radius:4px'></div><span>Low</span></div>
+            </div>
+          </div>`;
+        setTimeout(()=>renderBigHeat(),30);
+      }
+
+      else if(key==='risks'){
+        title.textContent='Risk Indicators & Alerts';
+        body.innerHTML = `<p style='color:var(--muted)'>Active alerts and thresholds.</p>
+          <table>
+            <thead><tr><th>Risk</th><th>Severity</th><th>Owner</th><th>Action</th></tr></thead>
+            <tbody id='riskTable'></tbody>
+          </table>
+          <div style='margin-top:12px'><button onclick='ackAll()'>Acknowledge All</button></div>`;
+        setTimeout(()=>renderRisks(),10);
+      }
+
+      else if(key==='product-status'){
+        title.textContent='Product Status (Circular Chart)';
+        body.innerHTML = `<canvas id='productStatusLarge' width='600' height='300'></canvas><p style='color:var(--muted)'>Shows percent complete, quality and confidence.</p>`;
+        setTimeout(()=>drawProductChart('productStatusLarge'),30);
+      }
+
+      else if(key==='users'){
+        title.textContent='User Management';
+        body.innerHTML = `<p style='color:var(--muted)'>Manage users, roles and permissions (stored in browser for demo).</p>
+          <div style='display:flex; gap:12px; align-items:flex-start'>
+            <div style='flex:1'>
+              <table><thead><tr><th>Username</th><th>Role</th><th>Action</th></tr></thead><tbody id='userTable'></tbody></table>
+            </div>
+            <div style='width:260px'>
+              <h4>Add User</h4>
+              <input id='newUser' class='input' placeholder='username' />
+              <input id='newPass' class='input' placeholder='password' />
+              <select id='newRole' class='input'><option>Product Owner</option><option>Team Lead</option><option>Project Manager</option><option>Engineering Manager</option></select>
+              <button onclick='addUser()'>Add</button>
+            </div>
+          </div>`;
+        setTimeout(()=>renderUsers(),10);
+      }
+
+      modal.style.display='flex';
+    }
+
+    function closeModal(){ document.getElementById('modal').style.display='none'; }
+    window.onclick = function(e){ if(e.target===document.getElementById('modal')) closeModal(); }
+
+    // ---------------------- INTEGRATIONS SAVE (demo) ----------------------
+    function saveIntegration(name){ localStorage.setItem('horizia_int_'+name, 'saved'); alert(name+' saved (demo)'); closeModal(); }
+
+    // ---------------------- PRODUCT STATUS CHART ----------------------
+    let productChart=null;
+    function drawProductChart(canvasId='productStatus'){
+      const canvas = document.getElementById(canvasId);
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if(productChart) try{ productChart.destroy() }catch(e){}
+      const data = { labels:['Complete','In Progress','At Risk'], datasets:[{ data:[55,30,15], backgroundColor:['#60a5fa','#fbbf24','#fb7185'], hoverOffset:4 }] };
+      productChart = new Chart(ctx, { type:'doughnut', data, options:{ plugins:{ legend:{ position:'bottom' } }, cutout:'65%'} });
+    }
+
+    // ---------------------- HEATMAP ----------------------
+    function renderMiniHeat(){ const container = document.getElementById('miniHeat'); if(!container) return; container.innerHTML=''; const vals = [1,2,3,2,1,0,2,3,1,1,2,3]; vals.forEach(v=>{ const div=document.createElement('div'); div.className='heatcell'; div.style.background = heatColor(v); div.textContent = v>0? v:''; container.appendChild(div); }); }
+    function renderBigHeat(){ const container=document.getElementById('bigHeat'); if(!container) return; container.innerHTML=''; const vals = Array.from({length:36}).map(()=> Math.ceil(Math.random()*4) ); vals.forEach(v=>{ const d=document.createElement('div'); d.className='heatcell'; d.style.background=heatColor(v); d.textContent = v>0? (v>3?'!':v):''; container.appendChild(d); }); }
+    function heatColor(v){ if(v>=4) return '#ff4d4f'; if(v===3) return '#ff944d'; if(v===2) return '#ffd24d'; if(v===1) return '#b3e59a'; return '#e6eef9'; }
+
+    // ---------------------- DEPENDENCY MAP (simple interactive SVG) ----------------------
+    function renderDepMap(){ const c = document.getElementById('depMap'); if(!c) return; c.innerHTML=''; // simple nodes
+      const nodes = [ {id:'A',x:80,y:80,label:'Payments'}, {id:'B',x:240,y:40,label:'Auth'}, {id:'C',x:420,y:120,label:'UI'}, {id:'D',x:320,y:220,label:'API'}, {id:'E',x:140,y:220,label:'Infra'} ];
+      // draw lines then nodes
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgNS,'svg'); svg.setAttribute('width','100%'); svg.setAttribute('height','420'); svg.setAttribute('viewBox','0 0 600 420');
+      // edges
+      const edges = [['A','D'],['B','A'],['B','D'],['D','C'],['E','D']];
+      edges.forEach(e=>{
+        const n1 = nodes.find(n=>n.id===e[0]); const n2 = nodes.find(n=>n.id===e[1]);
+        const line = document.createElementNS(svgNS,'line'); line.setAttribute('x1',n1.x); line.setAttribute('y1',n1.y); line.setAttribute('x2',n2.x); line.setAttribute('y2',n2.y); line.setAttribute('stroke','#cbd5e1'); line.setAttribute('stroke-width','3'); svg.appendChild(line);
+      });
+      // nodes
+      nodes.forEach(n=>{
+        const g = document.createElementNS(svgNS,'g'); g.setAttribute('transform',`translate(${n.x-18},${n.y-18})`);
+        const rect = document.createElementNS(svgNS,'rect'); rect.setAttribute('width','140'); rect.setAttribute('height','36'); rect.setAttribute('rx','8'); rect.setAttribute('fill','#fff'); rect.setAttribute('stroke','#e6eef9'); rect.setAttribute('x','0'); rect.setAttribute('y','-12'); rect.setAttribute('style','filter:drop-shadow(0 6px 10px rgba(2,6,23,0.06))');
+        const text = document.createElementNS(svgNS,'text'); text.setAttribute('x','10'); text.setAttribute('y','12'); text.setAttribute('font-size','12'); text.setAttribute('fill','#0f172a'); text.textContent = n.label;
+        g.appendChild(rect); g.appendChild(text); svg.appendChild(g);
+        // make draggable
+        makeDraggable(g, svg);
+      });
+      c.appendChild(svg);
+    }
+    function makeDraggable(element, svg){ let isDown=false; let offsetX=0, offsetY=0; element.addEventListener('mousedown', (e)=>{ isDown=true; const transform = element.getAttribute('transform') || 'translate(0,0)'; const match = transform.match(/translate\((-?\d+\.?\d*),\s*(-?\d+\.?\d*)\)/); if(match){ offsetX = e.clientX - parseFloat(match[1]); offsetY = e.clientY - parseFloat(match[2]); } });
+      window.addEventListener('mousemove', (e)=>{ if(!isDown) return; const x = e.clientX - offsetX; const y = e.clientY - offsetY; element.setAttribute('transform', `translate(${x},${y})`); });
+      window.addEventListener('mouseup', ()=>{ isDown=false; });
+    }
+
+    // ---------------------- RISKS ----------------------
+    function renderRisks(){ const table = document.getElementById('riskTable'); if(!table) return; const risks = [ {id:1,name:'Payment gateway latency',sev:'High',owner:'dan'},{id:2,name:'Auth token expiry issue',sev:'Critical',owner:'bob'},{id:3,name:'API rate limits',sev:'Medium',owner:'carol'} ]; table.innerHTML=''; risks.forEach(r=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${r.name}</td><td>${r.sev}</td><td>${r.owner}</td><td><button onclick="ack(${r.id})">Acknowledge</button></td>`; table.appendChild(tr); }); }
+    function ack(id){ alert('Acknowledged risk '+id); }
+    function ackAll(){ alert('All risks acknowledged (demo)'); }
+
+    // ---------------------- USERS UI ----------------------
+    function renderUsers(){ const tbl=document.getElementById('userTable'); if(!tbl) return; const users = JSON.parse(localStorage.getItem(demoUsersKey)||'[]'); tbl.innerHTML=''; users.forEach(u=>{ const tr=document.createElement('tr'); tr.innerHTML = `<td>${u.username}</td><td>${u.role}</td><td><button onclick="removeUser('${u.username}')">Remove</button></td>`; tbl.appendChild(tr); }); }
+    function addUser(){ const un=document.getElementById('newUser').value.trim(); const pw=document.getElementById('newPass').value; const role=document.getElementById('newRole').value; if(!un) return alert('Provide username'); const users=JSON.parse(localStorage.getItem(demoUsersKey)||'[]'); if(users.find(x=>x.username===un)) return alert('User exists'); users.push({id:Date.now(),username:un,password:pw||'pass',role}); localStorage.setItem(demoUsersKey, JSON.stringify(users)); renderUsers(); }
+    function removeUser(username){ if(!confirm('Remove '+username+'?')) return; let users=JSON.parse(localStorage.getItem(demoUsersKey)||'[]'); users = users.filter(u=>u.username!==username); localStorage.setItem(demoUsersKey, JSON.stringify(users)); renderUsers(); }
+
+    // ---------------------- AI CHAT (demo) ----------------------
+    function toggleChat(){
+      // defensive guard if chatOpen somehow not set
+      if(typeof chatOpen === 'undefined') chatOpen = false;
+      chatOpen = !chatOpen;
+      const chatbox = document.getElementById('chatbox');
+      if(chatbox) chatbox.style.display = chatOpen? 'flex':'none';
+    }
+    function addMessage(sender,text){ const el=document.createElement('div'); el.className='msg '+(sender==='user'?'user':'ai'); el.textContent=text; const box=document.getElementById('chatbox-messages'); if(box) { box.appendChild(el); box.scrollTop = box.scrollHeight; } }
+    async function sendMessage(){ const input=document.getElementById('chatInput'); if(!input) return; const txt = input.value.trim(); if(!txt) return; addMessage('user',txt); input.value=''; // demo AI: simple rule-based answers
+      let reply = 'Sorry, I don\'t know. Try asking about blockers, roadmap or product status.';
+      const q = txt.toLowerCase();
+      if(q.includes('blocker')||q.includes('blocks')) reply = 'There are several blockers concentrated in Payments and API. Open Blockers Heatmap for details.';
+      else if(q.includes('roadmap')) reply = 'Q2: Beta & Integrations. Q4: GA. Open the Delivery Roadmap for a visual timeline.';
+      else if(q.includes('status')||q.includes('product')) reply = 'Product is ~55% complete, with 15% at risk. Open Product Status for the circular chart.';
+      else if(q.includes('dependencies')) reply = 'Auth -> Payments -> API -> UI is the main chain. Use Cross-team Map to explore.';
+      addMessage('ai', reply);
+    }
+
+    // ---------------------- SMALL RENDER HELPERS ----------------------
+    function renderBigChartIfOpen(){ if(document.getElementById('productStatusLarge')) drawProductChart('productStatusLarge'); }
+
+    // ---------------------- INITIALIZATION ----------------------
+    document.addEventListener('DOMContentLoaded', ()=>{
+      // seed demo users, then render UI if a user is logged in
+      seedUsers();
+      updateDateTime();
+      setInterval(updateDateTime,1000);
+      renderMiniHeat();
+      drawProductChart();
+      if(getCurrentUser()) showDashboard();
+    });
+
+  </script>
+</body>
+</html>
