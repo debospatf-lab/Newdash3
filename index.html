@@ -45,7 +45,7 @@
     button{ margin-top:10px; padding:8px 12px; border:none; border-radius:8px; cursor:pointer; font-weight:600; background:var(--accent); color:white }
     button.ghost{ background:transparent; color:var(--accent); border:1px solid rgba(37,99,235,0.12) }
 
-    .body-actions { /* New actions bar under header */ display: flex; gap: 10px; margin: 20px 0 0 0; flex-wrap: wrap; }
+    .body-actions { display: flex; gap: 10px; margin: 20px 0 0 0; flex-wrap: wrap; }
 
     footer{ text-align:center; padding:18px; font-size:13px; background:#ffffff; color:var(--muted); box-shadow:0 -4px 8px rgba(0,0,0,0.04) }
 
@@ -54,7 +54,7 @@
     .modal-header{ display:flex; align-items:center; justify-content:space-between }
     .close{ cursor:pointer; font-size:22px; color:var(--muted) }
 
-    #loginPage{ display:flex; height:100vh; align-items:center; justify-content:center; background: linear-gradient(180deg,#f8fafc,#ffffff); }
+    #loginPage{ display:none; height:100vh; align-items:center; justify-content:center; background: linear-gradient(180deg,#f8fafc,#ffffff); }
     .login-box{ background:#fff; padding:24px; border-radius:12px; box-shadow:0 10px 30px rgba(2,6,23,0.06); width:360px }
     .input{ width:100%; padding:10px; border-radius:8px; border:1px solid #e6eef9; margin-bottom:10px }
 
@@ -75,122 +75,121 @@
     table{ width:100%; border-collapse:collapse }
     th,td{ padding:8px; border-bottom:1px solid #eef2ff; text-align:left }
 
-    /* ----------- Landing Page styles ------------ */
+    /* Landing Page Styles */
     #landingPage {
       display: flex;
       flex-direction: column;
       min-height: 100vh;
-      background: #fff;
+      background: #f8fafc;
     }
     .landing-header {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 28px 0 10px 0;
+      justify-content: center;
       background: #fff;
-      box-shadow: 0 4px 12px rgba(2,6,23,0.05);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 24px 36px;
-      flex-wrap: wrap;
-      gap: 20px;
+      box-shadow: 0 4px 20px rgba(2,6,23,0.03);
     }
-    .landing-header .logo-editable {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .logo-editable img {
-      width: 70px;
-      height: 70px;
+    .landing-logo {
+      width: 120px;
+      height: 120px;
       object-fit: contain;
-      border-radius: 12px;
-      background: #f1f5f9;
-      padding: 8px;
-    }
-    .edit-logo-btn {
-      font-size: 11px;
-      color: var(--accent);
-      background: transparent;
-      border: 1px solid #dbeafe;
-      border-radius: 6px;
-      padding: 3px 8px;
-      margin-left: 8px;
-      cursor: pointer;
-    }
-    .landing-main {
-      flex: 1;
-      padding: 36px 16px 24px 16px;
-      max-width: 1100px;
-      margin: 0 auto;
+      border-radius: 20px;
+      box-shadow: 0 4px 14px rgba(37,99,235,0.08);
+      background: #e7f0ff;
       display: flex;
-      flex-direction: column;
-      gap: 32px;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
     }
-    .lp-integrations-row {
-      display: flex; gap: 18px; justify-content: center; margin-bottom: 24px;
+    .landing-headline {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--accent);
+      margin: 0;
+      letter-spacing: -1px;
+    }
+    .landing-sub {
+      font-size: 16px;
+      color: var(--muted);
+      margin: 6px 0 0 0;
+      font-weight: 500;
+    }
+    .landing-features {
+      max-width: 950px;
+      margin: 34px auto 0 auto;
+      display: flex;
       flex-wrap: wrap;
+      gap: 28px;
+      justify-content: center;
     }
-    .lp-integration {
-      background: #f9fafb;
-      border-radius: 10px;
-      flex: 1 1 180px;
-      min-width: 170px;
-      max-width: 260px;
-      box-shadow: 0px 2px 8px rgba(37,99,235,0.06);
-      text-align: center;
-      padding: 22px 12px;
-      margin: 0 6px;
-    }
-    .lp-integration img { height: 36px; margin-bottom: 6px; }
-    .lp-pitch {
-      margin: 0 auto;
-      max-width: 900px;
+    .feature-card {
+      flex: 1 0 270px;
+      min-width: 270px;
+      max-width: 350px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(2,6,23,0.05);
+      padding: 26px 22px 16px 22px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
-    }
-    .lp-pitch-point {
-      display: flex;
-      gap: 16px;
       align-items: flex-start;
-      background: #f8fafc;
-      border-radius: 8px;
-      padding: 18px 14px;
-      box-shadow: 0 2px 10px rgba(2,6,23,0.04);
+      margin-bottom: 0;
+      min-height: 170px;
     }
-    .lp-pitch-point-icon {
-      font-size: 28px;
-      min-width: 32px;
-    }
-    .lp-pitch-point-content strong {
-      font-size: 17px;
+    .feature-title {
+      font-size: 18px;
       color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 7px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .lp-pitch-point-content p {
-      margin: 2px 0 0 0;
+    .feature-desc {
+      color: #475569;
       font-size: 15px;
-      color: var(--muted);
+      line-height: 1.4;
+      margin-bottom: 0;
     }
-    .lp-get-started-btn {
-      margin: 30px auto 0 auto; display: block; font-size: 17px; padding: 12px 32px; border-radius: 8px; background: var(--accent); color: #fff; font-weight: 700; box-shadow: 0 2px 10px rgba(37,99,235,0.04);
+    .landing-getstarted {
+      display: flex;
+      justify-content: center;
+      margin: 38px 0 0 0;
+    }
+    .landing-getstarted button {
+      padding: 14px 38px;
+      font-size: 19px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 800;
+      border-radius: 10px;
       border: none;
+      box-shadow: 0 3px 8px rgba(37,99,235,0.10);
       cursor: pointer;
+      transition: background 0.15s;
     }
-    .lp-footer {
-      text-align: center;
-      padding: 18px;
-      font-size: 13px;
-      background: #ffffff;
+    .landing-getstarted button:hover { background: #1743ad }
+    .landing-footer {
+      margin-top: auto;
+      background: #fff;
       color: var(--muted);
-      box-shadow:0 -4px 8px rgba(0,0,0,0.04)
+      font-size: 15px;
+      text-align: center;
+      padding: 22px 0 14px 0;
+      box-shadow: 0 -4px 8px rgba(0,0,0,0.03);
     }
-    @media (max-width:900px){
-      .landing-header { flex-direction:column; align-items:flex-start; gap:12px; padding: 18px 12px;}
-      .landing-main {padding: 24px 4px;}
-    }
-    @media (max-width:600px){
-      .lp-pitch-point { flex-direction: column; gap: 6px;}
-    }
-
     @media (max-width:800px){ .integrations{ flex-direction:column } }
+    @media (max-width: 1100px){
+      .landing-features { max-width: 100vw; gap: 15px;}
+      .feature-card { min-width: 210px; }
+    }
+    @media (max-width: 600px){
+      .landing-header{ flex-direction: column; }
+      .landing-logo{ margin-bottom: 12px; margin-right: 0;}
+      .landing-features{ flex-direction: column; gap: 18px;}
+    }
   </style>
 </head>
 <body>
@@ -198,100 +197,66 @@
   <!-- LANDING PAGE -->
   <div id="landingPage">
     <div class="landing-header">
-      <div class="logo-editable">
-        <img id="editableLogo" src="HORIZIA1.png" alt="App Logo" />
-        <button class="edit-logo-btn" onclick="editLogo()">Edit Logo</button>
-        <input type="file" id="logoFileInput" accept="image/*" style="display:none" />
+      <div class="landing-logo">
+        <img src="HORIZIA1.png" alt="HORIZIA Logo" style="width:80px; height:80px;" onerror="this.style.display='none'"/>
       </div>
-      <div style="font-size:22px; font-weight:700; color: var(--accent);">HORIZIA Collaboration Dashboard</div>
+      <div>
+        <div class="landing-headline">HORIZIA Collaboration Dashboard</div>
+        <div class="landing-sub">All your team’s delivery, blockers, risks, and planning in one unified dashboard.</div>
+      </div>
     </div>
-    <main class="landing-main">
-      <!-- Integrations horizontal row -->
-      <div class="lp-integrations-row">
-        <div class="lp-integration">
-          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/jira.svg" alt="Jira" />
-          <div style="font-weight:600; margin-bottom:6px">Jira</div>
-          <div style="font-size:14px; color:var(--muted)">Issues, sprints, and backlog in one view.</div>
-        </div>
-        <div class="lp-integration">
-          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/github.svg" alt="GitHub" />
-          <div style="font-weight:600; margin-bottom:6px">GitHub</div>
-          <div style="font-size:14px; color:var(--muted)">PRs, commits, and branches at a glance.</div>
-        </div>
-        <div class="lp-integration">
-          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/slack.svg" alt="Slack" />
-          <div style="font-weight:600; margin-bottom:6px">Slack</div>
-          <div style="font-size:14px; color:var(--muted)">Channels and alerts for team sync.</div>
-        </div>
+    <div class="landing-features">
+      <div class="feature-card">
+        <div class="feature-title">🔗 Integrate Jira, GitHub & Slack</div>
+        <div class="feature-desc">Connect all your core tools in one dashboard for seamless team collaboration, transparency, and faster delivery.</div>
       </div>
-      <!-- PITCH POINTS -->
-      <div class="lp-pitch">
-        <div class="lp-pitch-point">
-          <div class="lp-pitch-point-icon">🤝</div>
-          <div class="lp-pitch-point-content">
-            <strong>Unified Integrations</strong>
-            <p>Connect Jira, GitHub, and Slack in a single dashboard for seamless team collaboration and transparency across your projects.</p>
-          </div>
-        </div>
-        <div class="lp-pitch-point">
-          <div class="lp-pitch-point-icon">🗺️</div>
-          <div class="lp-pitch-point-content">
-            <strong>Annual Delivery Roadmap</strong>
-            <p>Visualize the yearly delivery plan, track milestones, and stay aligned on upcoming releases and goals.</p>
-          </div>
-        </div>
-        <div class="lp-pitch-point">
-          <div class="lp-pitch-point-icon">🔗</div>
-          <div class="lp-pitch-point-content">
-            <strong>Cross-team Dependency Map</strong>
-            <p>See how teams interact and depend on each other to break silos and manage dependencies efficiently.</p>
-          </div>
-        </div>
-        <div class="lp-pitch-point">
-          <div class="lp-pitch-point-icon">🔥</div>
-          <div class="lp-pitch-point-content">
-            <strong>Blockers Heatmap</strong>
-            <p>Identify where blockers are concentrated, so you can resolve critical issues faster and keep projects on track.</p>
-          </div>
-        </div>
-        <div class="lp-pitch-point">
-          <div class="lp-pitch-point-icon">⚠️</div>
-          <div class="lp-pitch-point-content">
-            <strong>Risk Indicators & Alerts</strong>
-            <p>Proactively monitor risks and receive alerts when thresholds are exceeded to ensure timely mitigation.</p>
-          </div>
-        </div>
-        <div class="lp-pitch-point">
-          <div class="lp-pitch-point-icon">📊</div>
-          <div class="lp-pitch-point-content">
-            <strong>Product Status Chart</strong>
-            <p>Quickly assess product health and completion with an intuitive circular chart updated in real time.</p>
-          </div>
-        </div>
-        <div class="lp-pitch-point">
-          <div class="lp-pitch-point-icon">🔒</div>
-          <div class="lp-pitch-point-content">
-            <strong>Role-based Access & User Management</strong>
-            <p>Securely manage user pages, roles, and permissions to ensure the right access for Product Owners, Team Leads, Project Managers, and Engineering Managers.</p>
-          </div>
-        </div>
-        <div class="lp-pitch-point">
-          <div class="lp-pitch-point-icon">🤖</div>
-          <div class="lp-pitch-point-content">
-            <strong>AI Assistant</strong>
-            <p>Ask questions about project status, blockers, or dependencies and get instant insights with the integrated AI chatbot.</p>
-          </div>
-        </div>
+      <div class="feature-card">
+        <div class="feature-title">🗺 Delivery Roadmap</div>
+        <div class="feature-desc">Visualize yearly milestones and releases. Plan ahead with an always up-to-date delivery roadmap.</div>
       </div>
-      <button class="lp-get-started-btn" onclick="gotoLogin()">Get Started</button>
-    </main>
-    <footer class="lp-footer">
-      HORIZIA brings all your product collaboration into one modern, easy-to-use dashboard.
-    </footer>
+      <div class="feature-card">
+        <div class="feature-title">🌐 Cross-team Dependency Map</div>
+        <div class="feature-desc">See how teams and components depend on each other, and manage dependencies for smooth project flow.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">🔥 Blockers Heatmap</div>
+        <div class="feature-desc">Identify where blockers are concentrated across your teams. Tackle issues before they escalate.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">⚠ Risk Indicators & Alerts</div>
+        <div class="feature-desc">Get alerted to critical risks and issues before they impact delivery. Stay proactive with instant alerts.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">📊 Product Status Chart</div>
+        <div class="feature-desc">Monitor product progress and completion in a single circular chart. Instantly spot at-risk areas.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">🛡️ Secure Access & Permissions</div>
+        <div class="feature-desc">Role-based access control. Manage users, roles, and permissions for Product Owners, Team Leads, Project Managers, and Engineering Managers.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">🔒 Authenticated Dashboard</div>
+        <div class="feature-desc">Every user logs in, and their dashboard is personalized to their role for secure and relevant access.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">🤖 AI Chatbot Assistant</div>
+        <div class="feature-desc">Ask questions about status, blockers, or delivery. Let our AI assistant help you navigate and plan better.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">👥 User Groups & Roles</div>
+        <div class="feature-desc">Product Owners, Team Leads, Project Managers, and Engineering Managers – each with a tailored dashboard experience.</div>
+      </div>
+    </div>
+    <div class="landing-getstarted">
+      <button onclick="goToLogin()">Get Started</button>
+    </div>
+    <div class="landing-footer">
+      Built for modern product teams — Integrate, plan, and deliver with HORIZIA.
+    </div>
   </div>
 
   <!-- LOGIN PAGE -->
-  <div id="loginPage" style="display:none">
+  <div id="loginPage" style="display:none;">
     <div class="login-box">
       <h3 style="margin:0 0 10px 0; color:var(--accent)">HORIZIA — Sign in</h3>
       <input id="inpUser" class="input" placeholder="Username" />
@@ -323,6 +288,7 @@
       </div>
     </header>
 
+    <!-- BODY-ONLY action bar for delivery/dep/blockers/risk -->
     <div class="container">
       <div class="body-actions" id="bodyActions">
         <button class="ghost" onclick="openModal('roadmap')">Delivery Roadmap</button>
@@ -439,41 +405,14 @@
   </div>
 
   <script>
-    // ---------------------- GLOBAL STATE ----------------------
-    let chatOpen = false;
-
-    // ---------------------- LANDING PAGE LOGO ----------------------
-    function editLogo() {
-      document.getElementById('logoFileInput').click();
-    }
-    document.getElementById('logoFileInput').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        document.getElementById('editableLogo').src = evt.target.result;
-        localStorage.setItem('horizia_logo', evt.target.result);
-        // Also set logo on dashboard
-        const dashboardLogo = document.querySelector("#dashboard header img");
-        if (dashboardLogo) dashboardLogo.src = evt.target.result;
-      }
-      reader.readAsDataURL(file);
-    });
-    // Restore logo if changed previously
-    document.addEventListener('DOMContentLoaded', function() {
-      const savedLogo = localStorage.getItem('horizia_logo');
-      if (savedLogo) {
-        document.getElementById('editableLogo').src = savedLogo;
-        const dashboardLogo = document.querySelector("#dashboard header img");
-        if (dashboardLogo) dashboardLogo.src = savedLogo;
-      }
-    });
-
-    // ---------------------- LANDING PAGE NAV ----------------------
-    function gotoLogin() {
+    // ---------------------- LANDING PAGE FLOW ----------------------
+    function goToLogin(){
       document.getElementById('landingPage').style.display = 'none';
       document.getElementById('loginPage').style.display = 'flex';
     }
+
+    // ---------------------- GLOBAL STATE ----------------------
+    let chatOpen = false;
 
     // ---------------------- AUTH + ROLES ----------------------
     const demoUsersKey = 'horizia_users_v1';
@@ -503,16 +442,20 @@
       showDashboard();
     }
 
-    function logout(){ localStorage.removeItem('horizia_current_user'); location.reload(); }
+    function logout(){
+      localStorage.removeItem('horizia_current_user');
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('loginPage').style.display = 'flex';
+    }
 
     function getCurrentUser(){ try{ return JSON.parse(localStorage.getItem('horizia_current_user')||'null'); }catch(e){ return null; } }
 
     function showDashboard(){
-      document.getElementById('landingPage').style.display='none';
-      document.getElementById('loginPage').style.display='none';
+      document.getElementById('landingPage').style.display = 'none';
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
       const user = getCurrentUser();
       if(!user) return document.getElementById('loginPage').style.display='flex';
-      document.getElementById('dashboard').style.display='block';
       document.getElementById('userRole').textContent = `${user.username} — ${user.role}`;
       document.querySelectorAll('.card').forEach(c=>c.style.display='none');
       const roleClasses = {
@@ -672,9 +615,13 @@
       setInterval(updateDateTime,1000);
       renderMiniHeat();
       drawProductChart();
-      // Initial state: show landing page, hide dashboard/login
-      if(getCurrentUser()) showDashboard();
-      else {
+
+      // --- LANDING PAGE LOGIC ---
+      const user = getCurrentUser();
+      if(user) {
+        document.getElementById('landingPage').style.display = 'none';
+        showDashboard();
+      } else {
         document.getElementById('landingPage').style.display = 'flex';
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('dashboard').style.display = 'none';
