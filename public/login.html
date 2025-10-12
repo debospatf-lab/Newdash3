@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign in to Horizia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="login">
+  <header class="site-header container">
+    <div class="brand">
+      <a href="index.html" class="flex gap-2" style="text-decoration:none; color:inherit">
+        <img src="assets/logo.png" alt="Horizia logo" class="logo" />
+        <strong>Horizia</strong>
+      </a>
+    </div>
+    <nav><ul><li><a href="index.html">Back to Landing</a></li></ul></nav>
+  </header>
+
+  <main class="container">
+    <div class="auth-wrapper fade-in">
+      <div class="auth-header">
+        <h1 style="margin:0">Sign in to Horizia</h1>
+        <div class="auth-tabs">
+          <button id="tab-signin" class="active" type="button">Sign In</button>
+          <button id="tab-signup" type="button">Sign Up</button>
+        </div>
+      </div>
+      <div class="auth-body">
+        <!-- Sign In -->
+        <form id="signin-form" class="form" autocomplete="on">
+          <label class="label" for="signin-email">Email</label>
+          <input id="signin-email" class="input" type="email" required placeholder="you@example.com" />
+
+          <label class="label" for="signin-password">Password</label>
+          <input id="signin-password" class="input" type="password" required placeholder="••••••••" />
+
+          <label class="label" for="signin-role">Role</label>
+          <select id="signin-role" class="input" required>
+            <option value="Admin">Admin</option>
+            <option value="Team Lead">Team Lead</option>
+            <option value="Project Manager">Project Manager</option>
+            <option value="Product Owner">Product Owner</option>
+            <option value="Engineering Manager">Engineering Manager</option>
+          </select>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Sign In</button>
+            <button type="button" id="btn-forgot" class="btn btn-outline">Forgot Password</button>
+          </div>
+          <div id="signin-message" class="text-muted"></div>
+        </form>
+
+        <!-- Sign Up -->
+        <form id="signup-form" class="form hidden" autocomplete="on">
+          <div class="flex gap-3">
+            <div style="flex:1">
+              <label class="label" for="first-name">First name</label>
+              <input id="first-name" class="input" type="text" required />
+            </div>
+            <div style="flex:1">
+              <label class="label" for="last-name">Last name</label>
+              <input id="last-name" class="input" type="text" required />
+            </div>
+          </div>
+
+          <label class="label" for="signup-email">Email</label>
+          <input id="signup-email" class="input" type="email" required placeholder="you@example.com" />
+
+          <label class="label" for="signup-password">Password</label>
+          <input id="signup-password" class="input" type="password" required placeholder="Create a password" />
+
+          <label class="label" for="signup-role">Role</label>
+          <select id="signup-role" class="input" required>
+            <option value="Admin">Admin</option>
+            <option value="Team Lead">Team Lead</option>
+            <option value="Project Manager">Project Manager</option>
+            <option value="Product Owner">Product Owner</option>
+            <option value="Engineering Manager">Engineering Manager</option>
+          </select>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-teal">Sign Up</button>
+            <a href="index.html" class="btn btn-outline">Back to Landing Page</a>
+          </div>
+          <div id="signup-message" class="text-muted"></div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
