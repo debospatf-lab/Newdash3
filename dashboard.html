@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Horizia — Unified Delivery Dashboard</title>
+  <style>
+    /* --- Reset & base --- */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#0f172a;line-height:1.45;background:#f8fafc}
+
+    /* --- Diamond-cut background (light green, blue, white) --- */
+    .bg-wrap{position:fixed;inset:0;overflow:hidden;z-index:-1}
+    .diamond{
+      position:absolute;
+      width:520px;height:520px;
+      transform:rotate(45deg);
+      filter:blur(20px);
+      opacity:0.22;
+      border-radius:8px;
+    }
+    .d1{left:-160px;top:-120px;background:linear-gradient(180deg,#dff8ec 0%,#bfeede 100%)}
+    .d2{right:-140px;top:-80px;background:linear-gradient(180deg,#e8f2ff 0%,#cfe6ff 100%);opacity:0.24}
+    .d3{left:20%;bottom:-200px;background:linear-gradient(180deg,white 0%,#eafffb 100%);opacity:0.16}
+
+    /* --- Main container --- */
+    .container{max-width:1200px;margin:48px auto;padding:36px 28px;background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.98));box-shadow:0 12px 40px rgba(2,6,23,0.09);border-radius:14px}
+
+    /* --- Logo section --- */
+    .logo-section{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+    .logo-editable{width:62px;height:62px;border-radius:12px;background:linear-gradient(135deg,#06b6d4,#6366f1);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:2.1rem;cursor:pointer;box-shadow:0 6px 18px rgba(99,102,241,0.13)}
+    .app-title{font-size:2rem;margin:0}
+    .app-tag{color:#475569;font-size:15px;margin-top:4px}
+
+    /* --- Integration banner --- */
+    .integration-banner{display:flex;gap:32px;justify-content:center;align-items:center;margin:18px 0 40px 0;}
+    .integration-card2{background:white;display:flex;flex-direction:column;align-items:center;min-width:110px;padding:13px 16px;border-radius:12px;border:1px solid #eef2ff;box-shadow:0 4px 12px rgba(2,6,23,0.03)}
+    .integration-label2{font-size:15px;font-weight:600;color:#0369a1;margin-bottom:3px}
+    .integration-desc{font-size:13px;color:#64748b}
+
+    /* --- Features grid --- */
+    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:18px}
+    .feature{background:white;border:1px solid #eef2ff;padding:22px 18px 16px 18px;border-radius:13px;box-shadow:0 2px 8px rgba(2,6,23,0.04);position:relative}
+    .feature h4{margin:0 0 7px 0;font-size:19px}
+    .feature p{margin:0;color:#475569;font-size:14px}
+    .feature-modal-btn{position:absolute;top:18px;right:18px;font-size:13px;background:#f1f5f9;border:none;border-radius:8px;padding:4px 10px;cursor:pointer;color:#2563eb}
+
+    /* --- Product status (chart) --- */
+    .circular-chart{display:flex;align-items:center;justify-content:center;margin:18px 0}
+    .circular-chart svg{width:88px;height:88px}
+    .circular-chart span{position:absolute;font-size:1.2rem;font-weight:700;color:#0f172a}
+    .circular-chart-wrap{position:relative;display:inline-block}
+
+    /* --- User roles and groups --- */
+    .roles-section{margin:30px 0 10px 0;background:white;padding:16px 20px;border-radius:12px;border:1px solid #eef2ff;}
+    .roles-title{font-weight:600;margin-bottom:6px}
+    .roles-list{display:flex;gap:16px;flex-wrap:wrap}
+    .role-chip{background:#f1f5f9;color:#2563eb;border-radius:8px;padding:6px 15px;font-size:14px;font-weight:500}
+
+    /* --- Auth/Login --- */
+    .auth-section{margin:28px 0 10px 0;background:white;padding:18px 22px;border-radius:12px;border:1px solid #eef2ff;}
+    .auth-title{font-weight:600;font-size:1.1rem;margin-bottom:7px}
+    .auth-form{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+    .auth-form input{border:1px solid #e2e8f0;border-radius:7px;padding:8px 12px;font-size:14px;}
+    .auth-form button{padding:8px 18px;border-radius:7px;border:1px solid transparent;background:#2563eb;color:white;font-weight:600;cursor:pointer;}
+    .auth-hint{font-size:13px;color:#64748b;margin-left:6px}
+
+    /* --- AI Chatbot --- */
+    .ai-section{margin:32px 0 14px 0;background:white;padding:17px 18px 14px 18px;border-radius:12px;border:1px solid #eef2ff;}
+    .ai-title{font-weight:600;margin-bottom:7px}
+    .ai-btn{background:#f1f5f9;color:#2563eb;border-radius:8px;padding:7px 18px;border:none;font-size:15px;cursor:pointer;font-weight:500}
+    .ai-desc{font-size:13px;color:#64748b;margin-top:7px}
+
+    /* --- Footer --- */
+    footer{margin-top:38px;padding-top:18px;border-top:1px solid #eef2ff;color:#64748b;text-align:center;font-size:15px}
+
+    /* --- Modal --- */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center;z-index:999}
+    .modal{background:white;padding:24px 28px 22px 28px;border-radius:14px;max-width:600px;width:98%;box-shadow:0 20px 60px rgba(2,6,23,0.35)}
+    .modal-header{display:flex;justify-content:space-between;align-items:center}
+    .close{background:#f8fafc;border-radius:8px;padding:8px 14px;border:1px solid #e6eef9;font-size:15px;cursor:pointer;margin-left:18px}
+    .modal.open{display:block}
+
+    /* --- Responsive --- */
+    @media (max-width:900px){
+      .features{grid-template-columns:1fr}
+      .container{margin:12px;padding:12px}
+      .integration-banner{flex-direction:column;gap:17px;}
+      .roles-list{gap:8px}
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-wrap" aria-hidden>
+    <div class="diamond d1"></div>
+    <div class="diamond d2"></div>
+    <div class="diamond d3"></div>
+  </div>
+
+  <div class="container">
+    <!-- Editable logo section -->
+    <div class="logo-section">
+      <div class="logo-editable" onclick="editLogo()" id="logo-box">H</div>
+      <div>
+        <div class="app-title">Horizia</div>
+        <div class="app-tag">Unified Delivery Dashboard</div>
+      </div>
+    </div>
+
+    <!-- Integration banner -->
+    <div class="integration-banner">
+      <div class="integration-card2">
+        <div class="integration-label2">Jira</div>
+        <div class="integration-desc">Project tracking & issues</div>
+      </div>
+      <div class="integration-card2">
+        <div class="integration-label2">GitHub</div>
+        <div class="integration-desc">Code & PRs</div>
+      </div>
+      <div class="integration-card2">
+        <div class="integration-label2">Slack</div>
+        <div class="integration-desc">Team comms & alerts</div>
+      </div>
+      <div style="font-size:15px;color:#475569;min-width:180px;text-align:center;">
+        Integrate Jira, GitHub, and Slack for better collaboration and transparency.
+      </div>
+    </div>
+
+    <!-- Feature grid -->
+    <section class="features">
+      <div class="feature">
+        <h4>Delivery Roadmap (Year)</h4>
+        <button class="feature-modal-btn" onclick="openModal('roadmap')">View details</button>
+        <p>Interactive timeline showing releases, milestones and linked work items for the full year.</p>
+      </div>
+      <div class="feature">
+        <h4>Cross-team Dependency Map</h4>
+        <button class="feature-modal-btn" onclick="openModal('dependency')">View map</button>
+        <p>Visual representation of handoffs, ownership, and downstream impact across teams and components.</p>
+      </div>
+      <div class="feature">
+        <h4>Blockers Heat Map</h4>
+        <button class="feature-modal-btn" onclick="openModal('blockers')">View heat map</button>
+        <p>Color-coded map to surface where blockers are concentrated so teams can triage faster.</p>
+      </div>
+      <div class="feature">
+        <h4>Risk Indicators & Alerts</h4>
+        <button class="feature-modal-btn" onclick="openModal('risk')">Show alerts</button>
+        <p>Automated signals for schedule slippage, PR backlog and test failures with one-click stakeholder alerts.</p>
+      </div>
+      <div class="feature">
+        <h4>Product Status (Circular Chart)</h4>
+        <button class="feature-modal-btn" onclick="openModal('product-status')">View chart</button>
+        <div class="circular-chart">
+          <div class="circular-chart-wrap">
+            <svg>
+              <circle cx="44" cy="44" r="36" stroke="#dbeafe" stroke-width="10" fill="none"/>
+              <circle cx="44" cy="44" r="36" stroke="#14b8a6" stroke-width="10" fill="none"
+                stroke-dasharray="226.2" stroke-dashoffset="63.336" stroke-linecap="round"/>
+            </svg>
+            <span style="position:absolute;top:27px;left:35px;">72%</span>
+          </div>
+        </div>
+        <p>Donut chart summarizing product health: progress, test pass rate, and critical issues.</p>
+      </div>
+    </section>
+
+    <!-- User roles and groups -->
+    <div class="roles-section">
+      <div class="roles-title">User Groups</div>
+      <div class="roles-list">
+        <span class="role-chip">Product Owner</span>
+        <span class="role-chip">Team Lead</span>
+        <span class="role-chip">Project Manager</span>
+        <span class="role-chip">Engineering Manager</span>
+      </div>
+      <div style="margin-top:8px;font-size:13px;color:#64748b">
+        Roles and permissions enable secure, personalized access to dashboard features.
+      </div>
+    </div>
+
+    <!-- Auth/Login section -->
+    <div class="auth-section">
+      <div class="auth-title">Secure Access (Login)</div>
+      <form class="auth-form" onsubmit="return fakeLogin(event)">
+        <input type="text" placeholder="Email or Username" id="username" required />
+        <input type="password" placeholder="Password" id="password" required />
+        <select id="role" required>
+          <option value="" disabled selected>Role</option>
+          <option>Product Owner</option>
+          <option>Team Lead</option>
+          <option>Project Manager</option>
+          <option>Engineering Manager</option>
+        </select>
+        <button type="submit">Login</button>
+        <span class="auth-hint">Role is tied to authenticated user.</span>
+      </form>
+      <div id="login-message" style="margin-top:8px;font-size:13px; color:#22c55e"></div>
+    </div>
+
+    <!-- AI chatbot section -->
+    <div class="ai-section">
+      <div class="ai-title">AI Chatbot Assistant</div>
+      <button class="ai-btn" onclick="openModal('chat')">Ask the AI Assistant</button>
+      <div class="ai-desc">Get answers to questions like "Show blockers for Q3" or "List all PRs open". The assistant pulls live context from your dashboard.</div>
+    </div>
+
+    <!-- Footer -->
+    <footer>Horizia — Unified delivery visibility across product and engineering teams for better collaboration and transparency.</footer>
+  </div>
+
+  <!-- Modals -->
+  <div id="modal-backdrop" class="modal-backdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <h3 id="modal-title">Modal</h3>
+        <button class="close" onclick="closeModal()">Close</button>
+      </div>
+      <div id="modal-body" style="margin-top:12px;color:#475569"></div>
+    </div>
+  </div>
+
+  <script>
+    // Editable logo
+    function editLogo() {
+      let newLogo = prompt("Enter new logo text or emoji (max 2 chars):", document.getElementById("logo-box").textContent);
+      if (newLogo !== null && newLogo.length > 0 && newLogo.length <= 2) {
+        document.getElementById("logo-box").textContent = newLogo;
+      }
+    }
+
+    // Modal logic
+    function openModal(name){
+      const backdrop = document.getElementById('modal-backdrop');
+      const title = document.getElementById('modal-title');
+      const body = document.getElementById('modal-body');
+      backdrop.style.display = 'flex';
+
+      if(name === 'roadmap'){
+        title.textContent = 'Delivery Roadmap — Year';
+        body.innerHTML = `
+          <p><b>Yearly timeline</b> with milestones, releases, and linked Jira/GitHub items. Filter by team and priority. Click items for detail.</p>
+          <ul>
+            <li>Q1: Alpha release, 3 milestones</li>
+            <li>Q2: Beta, 2 major integrations</li>
+            <li>Q3: Launch, dependency handoffs</li>
+            <li>Q4: Maintenance, risk review</li>
+          </ul>
+        `;
+      } else if(name === 'dependency'){
+        title.textContent = 'Cross-Team Dependency Map';
+        body.innerHTML = `
+          <p>Interactive map showing handoffs, owners, and downstream impact across product and engineering teams.</p>
+          <img src="https://dummyimage.com/400x120/ccf/222.png&text=Dependency+Map+Graph" alt="dependency map" style="width:100%;border-radius:8px;margin-top:12px;">
+        `;
+      } else if(name === 'blockers'){
+        title.textContent = 'Blockers Heat Map';
+        body.innerHTML = `
+          <p>Color-coded heat map reveals where blockers are concentrated. Triage by team/component for fast resolution.</p>
+          <img src="https://dummyimage.com/400x120/ffe4e6/991b1b.png&text=Blockers+Heat+Map" alt="blockers heat" style="width:100%;border-radius:8px;margin-top:12px;">
+        `;
+      } else if(name === 'risk'){
+        title.textContent = 'Risk Indicators & Alerts';
+        body.innerHTML = `
+          <p>Automated signals for schedule slippage, PR backlog, and test failures with one-click stakeholder alerts.</p>
+          <ul>
+            <li><span style="color:#dc2626;font-weight:600">3 High risk</span> — deadline slippage</li>
+            <li><span style="color:#f59e42;font-weight:600">2 Moderate</span> — PRs stuck >5d</li>
+            <li><span style="color:#38bdf8;font-weight:600">5 Info</span> — test failures</li>
+          </ul>
+        `;
+      } else if(name === 'product-status'){
+        title.textContent = 'Product Status (Circular Chart)';
+        body.innerHTML = `
+          <div style="display:flex;justify-content:center;">
+            <div class="circular-chart-wrap">
+              <svg>
+                <circle cx="44" cy="44" r="36" stroke="#dbeafe" stroke-width="10" fill="none"/>
+                <circle cx="44" cy="44" r="36" stroke="#14b8a6" stroke-width="10" fill="none"
+                  stroke-dasharray="226.2" stroke-dashoffset="63.336" stroke-linecap="round"/>
+              </svg>
+              <span style="position:absolute;top:27px;left:35px;">72%</span>
+            </div>
+          </div>
+          <div style="margin-top:14px;font-size:15px;">
+            <b>Product Health:</b> 72% overall<br>
+            <small>Test pass rate: 88%<br>Critical issues: 1<br>Progress: 72%</small>
+          </div>
+        `;
+      } else if(name === 'chat'){
+        title.textContent = 'AI Assistant';
+        body.innerHTML = `
+          <p>Ask questions like <i>"Top blockers for Q3?"</i> or <i>"Show PRs for team Beta"</i>. The assistant uses dashboard context and user role for answers.</p>
+          <input type="text" id="ai-input" placeholder="Type your question..." style="width:94%;padding:8px;font-size:15px;margin-bottom:10px;border-radius:6px;border:1px solid #e5e7eb;" onkeydown="if(event.key==='Enter'){aiAnswer();}">
+          <button onclick="aiAnswer()" style="padding:7px 16px;border-radius:7px;background:#2563eb;color:white;border:none;">Ask</button>
+          <div id="ai-output" style="margin-top:15px;color:#334155;font-size:15px;"></div>
+        `;
+      }
+    }
+    function closeModal(){
+      const backdrop = document.getElementById('modal-backdrop');
+      backdrop.style.display = 'none';
+    }
+
+    // Close modal on ESC
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+
+    // Fake login logic (for demo only)
+    function fakeLogin(e){
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const role = document.getElementById('role').value;
+      if(username && role){
+        document.getElementById('login-message').textContent =
+          "Welcome, " + username + " (" + role + ")! Secure access granted.";
+      }
+      setTimeout(() => { document.getElementById('login-message').textContent = ""; }, 3500);
+      return false;
+    }
+
+    // Simulated AI answer
+    function aiAnswer(){
+      const input = document.getElementById('ai-input').value.trim();
+      const output = document.getElementById('ai-output');
+      if(!input){ output.textContent = "Please enter a question."; return; }
+      if(input.toLowerCase().includes("blocker")) output.textContent = "There are 3 critical blockers for Q3: Integration delay, PR backlog, and test failures.";
+      else if(input.toLowerCase().includes("pr")) output.textContent = "Team Beta has 5 open PRs, 2 marked as high priority.";
+      else output.textContent = "Sorry, I couldn't find a direct answer. Try asking about blockers, PRs, or team status.";
+    }
+  </script>
+</body>
+</html>
