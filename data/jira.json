@@ -1,0 +1,14 @@
+{
+  "projects": [
+    { "id": "P1", "name": "Alpha" },
+    { "id": "P2", "name": "Beta" },
+    { "id": "P3", "name": "Gamma" }
+  ],
+  "risks": 3,
+  "blockers": 4,
+  "milestones": 12,
+  "dependencies": 8,
+  "tasks": 146,
+  "upcoming": 5,
+  "overdue": 2
+}

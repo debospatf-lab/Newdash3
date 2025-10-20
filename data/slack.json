@@ -1,0 +1,15 @@
+{
+  "mentions": 48,
+  "team_members": ["Ada", "Grace", "Edsger", "Linus", "Guido"],
+  "checkins": [
+    { "name": "Ada", "status": "Checked in" },
+    { "name": "Grace", "status": "Not checked in" },
+    { "name": "Edsger", "status": "Checked in" }
+  ],
+  "utilization": 68,
+  "workload": [
+    { "name": "Ada", "level": "Moderate" },
+    { "name": "Grace", "level": "Light" },
+    { "name": "Edsger", "level": "Heavy" }
+  ]
+}
